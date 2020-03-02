@@ -23,10 +23,71 @@ extension BasementDriver {
 
 }
 
+private let jsonDecoder: JSONDecoder = {
+  let decoder = JSONDecoder()
+
+  decoder.dateDecodingStrategy = .iso8601
+
+  return decoder
+}()
+
+private extension Card {
+
+  struct JSONDecodingData: Decodable {
+    let id: UUID?
+
+    let title: String
+    let genre: String
+    let description: String
+
+    let date: Date
+    let location: String
+
+    let image_url: URL
+  }
+
+  static func newCard(from data: JSONDecodingData, by author: User) throws -> Card? {
+    try Self(
+      id: data.id ?? UUID(),
+      author_id: author.id,
+      title: data.title,
+      genre: data.genre,
+      description: data.description,
+      date: data.date,
+      location: data.location,
+      image_url: data.image_url
+    ).insert()
+  }
+
+}
+
 private extension BasementDriver {
 
   static func createHandler(request: HTTPRequest, response: HTTPResponse) {
+    guard
+      let user = request.scratchPad["user"] as? User
+    else {
+      return response
+        .completed(status: .forbidden)
+    }
 
+    guard
+      let postBody = request.postBodyBytes,
+      let decodingData = try? jsonDecoder.decode(Card.JSONDecodingData.self, from: Data(postBody))
+    else {
+      return response
+        .completed(status: .badRequest)
+    }
+
+    guard
+      let card = try? Card.newCard(from: decodingData, by: user)
+    else {
+      return response
+        .completed(status: .internalServerError)
+    }
+
+    response
+      .JSON(encoding: card)
   }
 
   static func listHandler(request: HTTPRequest, response: HTTPResponse) {
@@ -83,11 +144,24 @@ private extension BasementDriver {
   }
 
   static func updateHandler(request: HTTPRequest, response: HTTPResponse) {
-
+    response
+      .completed(status: .notImplemented)
   }
 
   static func deleteHandler(request: HTTPRequest, response: HTTPResponse) {
+    guard
+      let user = request.scratchPad["user"] as? User,
+      let card = request.scratchPad["card"] as? Card,
+      user.canDelete(card: card)
+    else {
+      return response
+        .completed(status: .forbidden)
+    }
 
+    try! card.delete()
+
+    response
+      .completed(status: .noContent)
   }
 
 }

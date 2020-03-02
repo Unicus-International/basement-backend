@@ -1,6 +1,6 @@
 import Foundation
 
-struct Card: Fetchable, ChildFetchable {
+struct Card: Fetchable, ChildFetchable, Deletable {
   let id: UUID
   let author_id: UUID
 
@@ -26,5 +26,9 @@ extension Card: ParentFetcher {
 extension User: ChildFetcher {
 
   var cards: [Card] { fetchChildren(foreignKey: \.author_id) }
+
+  func canDelete(card: Card) -> Bool {
+    card.author_id == id
+  }
 
 }

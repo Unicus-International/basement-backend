@@ -36,7 +36,7 @@ extension BasementDriver {
     let server = HTTPServer()
 
     server.addRoutes(routes)
-    server.serverPort = 8181
+    server.serverPort = 8282
     server.serverAddress = "::1"
 
     SessionConfig.name = "BasementDriver"

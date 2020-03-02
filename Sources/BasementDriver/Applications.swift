@@ -14,7 +14,7 @@ extension BasementDriver {
   static var database: Database<PostgresDatabaseConfiguration>! = nil
 
   static var routes: Routes {
-    var routes = Routes()
+    var routes = self.baseRoutes
 
     routes.add(Self.cardRoutes)
     routes.add(Self.userRoutes)

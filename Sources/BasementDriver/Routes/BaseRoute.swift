@@ -14,7 +14,11 @@ extension BasementDriver {
 private extension BasementDriver {
 
   static func baseHandler(request: HTTPRequest, response: HTTPResponse) {
-    if let username = request.session?.userid, let user = try? User.named(username) {
+    if
+      let username = request.session?.userid,
+      username != "",
+      let user = try? User.named(username)
+    {
       request.scratchPad["user"] = user
     }
 

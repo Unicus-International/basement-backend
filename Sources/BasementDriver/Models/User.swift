@@ -20,7 +20,7 @@ extension User {
   }
 
   static func isRegisterable(username: String) throws -> Bool {
-    try User.named(username) == nil
+    try username.count >= 3 && User.named(username) == nil
   }
 
   init?(username: String, password: String, emailAddress: String) throws {

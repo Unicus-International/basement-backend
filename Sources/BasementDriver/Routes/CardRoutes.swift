@@ -30,7 +30,23 @@ private extension BasementDriver {
   }
 
   static func listHandler(request: HTTPRequest, response: HTTPResponse) {
+    guard
+      let page: Int = request.param(name: "page").flatMap({ Int($0) }),
+      let limit: Int = request.param(name: "limit").flatMap({ Int($0) })
+    else {
+      return response
+        .completed(status: .badRequest)
+    }
 
+    guard
+      let cards = try? Card.all(page: page, limit: limit)
+    else {
+      return response
+        .completed(status: .internalServerError)
+    }
+
+    response
+      .JSON(encoding: cards)
   }
 
   static func fetchHandler(request: HTTPRequest, response: HTTPResponse) {

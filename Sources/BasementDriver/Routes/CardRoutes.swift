@@ -5,7 +5,7 @@ import PerfectHTTP
 extension BasementDriver {
 
   static var cardRoutes: Routes {
-    var cardRoutes = Routes(baseUri: "/cards")
+    var cardRoutes = Routes(baseUri: "/card")
 
     cardRoutes.add(method: .post, uri: "/create", handler: createHandler)
     cardRoutes.add(method: .get, uri: "/list", handler: listHandler)

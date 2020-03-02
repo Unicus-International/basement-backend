@@ -9,6 +9,8 @@ import PerfectLib
 
 extension BasementDriver {
 
+  static var log = Log.self
+
   static var database: Database<PostgresDatabaseConfiguration>! = nil
 
   static var routes: Routes {
@@ -50,7 +52,7 @@ extension BasementDriver {
 
   struct LoggingFilter: HTTPRequestFilter {
     func filter(request: HTTPRequest, response: HTTPResponse, callback: (HTTPRequestFilterResult) -> ()) {
-      Log.info(message: "\(request.method) \(request.uri)")
+      log.info(message: "\(request.method) \(request.uri)")
 
       callback(.continue(request, response))
     }

@@ -34,11 +34,36 @@ private extension BasementDriver {
   }
 
   static func fetchHandler(request: HTTPRequest, response: HTTPResponse) {
+    guard
+      let card_id = request.urlVariables["card_id"],
+      let card_uuid = UUID(uuidString: card_id)
+    else {
+      return response
+        .completed(status: .badRequest)
+    }
 
+    guard
+      let card = Card.search(key: card_uuid)
+    else {
+      return response
+        .completed(status: .notFound);
+    }
+
+    request.scratchPad["card"] = card
+    response
+      .next()
   }
 
   static func readHandler(request: HTTPRequest, response: HTTPResponse) {
+    guard
+      let card = request.scratchPad["card"] as? Card
+    else {
+      return response
+        .completed(status: .internalServerError)
+    }
 
+    response
+      .JSON(encoding: card)
   }
 
   static func updateHandler(request: HTTPRequest, response: HTTPResponse) {

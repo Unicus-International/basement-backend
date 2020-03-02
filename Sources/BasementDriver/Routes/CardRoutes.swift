@@ -87,7 +87,8 @@ private extension BasementDriver {
     }
 
     response
-      .JSON(encoding: card)
+      .addHeader(.location, value: "\(card.id)/read")
+      .completed(status: .created)
   }
 
   static func listHandler(request: HTTPRequest, response: HTTPResponse) {

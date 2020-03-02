@@ -57,6 +57,7 @@ private extension BasementDriver {
 
     request.session?.userid = user.username
     response
+      .addHeader(.location, value: "profile")
       .completed(status: .created)
   }
 

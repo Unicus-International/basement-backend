@@ -1,7 +1,5 @@
 import Foundation
 
-import PerfectCrypto
-
 struct User: NamedFetchable, Addressable {
   let id: UUID
 
@@ -43,35 +41,4 @@ extension User {
     Password(self.password).validate(against: password)
   }
 
-}
-
-private struct Password: CustomStringConvertible {
-  let salt: String
-  let hash: String
-
-  init(_ password: String) {
-    let components = password.split(separator: "$")
-    salt = String(components.first!)
-    hash = String(components.last!)
-  }
-
-  init(hashing password: String, salt: String = Self.makeSalt()) {
-    self.salt = salt
-    self.hash = (salt + password)
-      .digest(.sha256)
-      .flatMap({ $0.encode(.hex) })
-      .flatMap({ String(validatingUTF8: $0) })!
-  }
-
-  var description: String {
-    "$\(salt)$\(hash)"
-  }
-
-  static func makeSalt(length: Int = 16) -> String {
-    [UInt8](randomCount: length).encode(.hex).flatMap { String(validatingUTF8: $0) }!
-  }
-
-  func validate(against password: String) -> Bool {
-    self.description == Password(hashing: password, salt: salt).description
-  }
 }

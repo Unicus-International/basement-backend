@@ -6,7 +6,10 @@ extension PasswordTests {
     //   `swift test --generate-linuxmain`
     // to regenerate.
     static let __allTests__PasswordTests = [
+        ("testRepassword", testRepassword),
+        ("testResalt", testResalt),
         ("testPassword", testPassword),
+        ("testSalt", testSalt),
     ]
 }
 

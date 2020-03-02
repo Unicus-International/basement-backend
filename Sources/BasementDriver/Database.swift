@@ -19,7 +19,7 @@ extension BasementDriver {
 
   #if DEBUG
   static func insertDebugData() throws {
-    let user = try User.newUser(username: "Wheel", emailAddress: "wheel@basementub.com")!
+    let user = try User.newUser(username: "Wheel", password: "iebin", emailAddress: "wheel@basementub.com")!
   }
   #endif
 

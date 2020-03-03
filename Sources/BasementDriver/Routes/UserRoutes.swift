@@ -23,7 +23,7 @@ private extension BasementDriver {
 
   static func registerHandler(request: HTTPRequest, response: HTTPResponse) {
     guard
-      request.session?.userid == nil
+      (request.session?.userid ?? "") == ""
     else {
       return response
         .completed(status: .forbidden)

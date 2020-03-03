@@ -67,6 +67,7 @@ private extension BasementDriver {
     guard
       let user = request.scratchPad["user"] as? User
     else {
+      log.debug(message: "403 No user logged in")
       return response
         .completed(status: .forbidden)
     }
@@ -75,6 +76,7 @@ private extension BasementDriver {
       let postBody = request.postBodyBytes,
       let decodingData = try? jsonDecoder.decode(Card.JSONDecodingData.self, from: Data(postBody))
     else {
+      log.debug(message: "400 Missing or malformed post body")
       return response
         .completed(status: .badRequest)
     }
@@ -82,10 +84,12 @@ private extension BasementDriver {
     guard
       let card = try? Card.newCard(from: decodingData, by: user)
     else {
+      log.debug(message: "500 Card could not be created")
       return response
         .completed(status: .internalServerError)
     }
 
+    log.info(message: "201 Created")
     response
       .addHeader(.location, value: "\(card.id)/read")
       .completed(status: .created)
@@ -96,6 +100,7 @@ private extension BasementDriver {
       let page: Int = request.param(name: "page").flatMap({ Int($0) }),
       let limit: Int = request.param(name: "limit").flatMap({ Int($0) })
     else {
+      log.debug(message: "400 Missing page or limit")
       return response
         .completed(status: .badRequest)
     }
@@ -103,10 +108,12 @@ private extension BasementDriver {
     guard
       let cards = try? Card.all(page: page, limit: limit)
     else {
+      log.debug(message: "500 Database error")
       return response
         .completed(status: .internalServerError)
     }
 
+    log.info(message: "200 OK")
     response
       .JSON(encoding: cards)
   }
@@ -116,6 +123,7 @@ private extension BasementDriver {
       let card_id = request.urlVariables["card_id"],
       let card_uuid = UUID(uuidString: card_id)
     else {
+      log.debug(message: "400 Missing or malformed {card_id}")
       return response
         .completed(status: .badRequest)
     }
@@ -123,6 +131,7 @@ private extension BasementDriver {
     guard
       let card = Card.search(key: card_uuid)
     else {
+      log.debug(message: "404 No such card")
       return response
         .completed(status: .notFound);
     }
@@ -136,15 +145,18 @@ private extension BasementDriver {
     guard
       let card = request.scratchPad["card"] as? Card
     else {
+      log.debug(message: "500 Card not initialized")
       return response
         .completed(status: .internalServerError)
     }
 
+    log.info(message: "200 OK")
     response
       .JSON(encoding: card)
   }
 
   static func updateHandler(request: HTTPRequest, response: HTTPResponse) {
+    log.info(message: "501 Not Implemented")
     response
       .completed(status: .notImplemented)
   }
@@ -155,12 +167,14 @@ private extension BasementDriver {
       let card = request.scratchPad["card"] as? Card,
       user.canDelete(card: card)
     else {
+      log.debug(message: "403 No user, or user cannot delete it")
       return response
         .completed(status: .forbidden)
     }
 
     try! card.delete()
 
+    log.info(message: "200 OK")
     response
       .completed(status: .noContent)
   }

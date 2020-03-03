@@ -73,10 +73,19 @@ private extension BasementDriver {
     }
 
     guard
-      let postBody = request.postBodyBytes,
+      let postBody = request.postBodyBytes
+    else {
+      log.debug(message: "400 Missing post body")
+      return response
+        .completed(status: .badRequest)
+
+    }
+
+    guard
       let decodingData = try? jsonDecoder.decode(Card.JSONDecodingData.self, from: Data(postBody))
     else {
-      log.debug(message: "400 Missing or malformed post body")
+      let bodyString = String(validatingUTF8: postBody) ?? "malformed text data"
+      log.debug(message: "400 Malformed post body: \(bodyString)")
       return response
         .completed(status: .badRequest)
     }

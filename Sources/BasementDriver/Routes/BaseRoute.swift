@@ -6,7 +6,11 @@ import PerfectSession
 extension BasementDriver {
 
   static var baseRoutes: Routes {
-    Routes(baseUri: "/v0", handler: baseHandler)
+    var baseRoutes = Routes(baseUri: "/v0", handler: baseHandler)
+
+    baseRoutes.add(method: .options, uri: "**", handler: optionsHandler)
+
+    return baseRoutes
   }
 
 }
@@ -24,6 +28,15 @@ private extension BasementDriver {
 
     response
       .next()
+  }
+
+  static func optionsHandler(request: HTTPRequest, response: HTTPResponse) {
+    struct Response: Codable {
+      let Success = "CORS Request"
+    }
+
+    response
+      .JSON(encoding: Response())
   }
 
 }

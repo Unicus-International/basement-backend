@@ -42,6 +42,12 @@ extension BasementDriver {
     SessionConfig.name = "BasementDriver"
     SessionConfig.cookieDomain = "basement.yoga.unicus.com"
 
+    SessionConfig.CORS.enabled = true
+    SessionConfig.CORS.acceptableHostnames = ["*.basement.yoga.unicus.com"]
+
+    SessionConfig.CORS.methods = [.get, .post, .options]
+    SessionConfig.CORS.withCredentials = true
+
     let sessionDriver = SessionMemoryDriver()
 
     server.setRequestFilters([(LoggingFilter(), .high), sessionDriver.requestFilter])
